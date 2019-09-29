@@ -1,15 +1,30 @@
 FROM buildpack-deps:stretch
 
-LABEL maintainer="Sebastian Ramirez <tiangolo@gmail.com>"
-
 # Versions of Nginx and nginx-rtmp-module to use
 ENV NGINX_VERSION nginx-1.15.0
 ENV NGINX_RTMP_MODULE_VERSION 1.2.1
+ENV FFMPEG_VERSION=3.0.2
+
+# Enable extra build sources
+COPY sources.list /etc/apt/sources.list
 
 # Install dependencies
-RUN apt-get update && \
-    apt-get install -y ca-certificates openssl libssl-dev && \
+RUN apt-get update &&  \
+    apt-get install -y ca-certificates openssl libssl-dev ffmpeg && \
     rm -rf /var/lib/apt/lists/*
+
+# Install ffmpeg
+# RUN apt-get install -y autoconf automake build-essential cmake git-core libass-dev libfreetype6-dev libtool libvorbis-dev pkg-config texinfo wget zlib1g-dev
+# RUN mkdir -p /tmp/ffmpeg && \
+#   cd /tmp/ffmpeg && \
+#   curl -s http://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.gz | tar zxvf - -C . && \
+#   cd ffmpeg-${FFMPEG_VERSION} && \
+#   ./configure \
+#   --enable-version3 --enable-gpl --enable-nonfree --enable-small --enable-libmp3lame --enable-libx264 --enable-libx265 --enable-libvpx --enable-libtheora --enable-libvorbis --enable-libopus --enable-libass --enable-libwebp --enable-librtmp --enable-postproc --enable-avresample --enable-libfreetype --enable-openssl --disable-debug && \
+#   make && \
+#   make install && \
+#   make distclean && \
+#   rm -rf /tmp/ffmpeg
 
 # Download and decompress Nginx
 RUN mkdir -p /tmp/build/nginx && \
